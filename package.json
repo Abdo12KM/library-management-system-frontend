@@ -5,6 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:local": "cross-env NEXT_PUBLIC_API_BASE_URL=http://localhost:5000/api next dev",
+    "dev:prod": "cross-env NEXT_PUBLIC_API_BASE_URL=https://library-management-system-3ilo.onrender.com/api next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -56,6 +58,7 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
+    "cross-env": "^10.0.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "^15.4.6",
     "prettier": "3.6.2"
