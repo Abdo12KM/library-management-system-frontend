@@ -9,6 +9,7 @@ import {
   CheckCircle,
   RotateCcw,
   Calendar,
+  AlertTriangle,
 } from "lucide-react";
 import { loansApi } from "@/lib/api";
 import { Loan, Book, Reader } from "@/types";
@@ -82,10 +83,12 @@ export default function MyLoansPage() {
               Track your current and past book loans
             </p>
           </div>
-          <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md flex items-center gap-2">
-            <RotateCcw className="h-4 w-4" />
-            Renew All
-          </button>
+          {error && (
+            <div className="bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-300 px-4 py-2 rounded-md flex items-center gap-2 border border-red-200 dark:border-red-800">
+              <AlertTriangle className="h-4 w-4" />
+              Error loading loans
+            </div>
+          )}
         </div>
 
         {/* Stats Cards */}
@@ -232,17 +235,14 @@ export default function MyLoansPage() {
                             </span>
                           </div>
                         </div>
-                        <div className="flex flex-col gap-2">
-                          <button className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-3 py-1 rounded">
-                            Renew
-                          </button>
+                        <div className="text-right">
                           <span
-                            className={`text-xs text-center ${
+                            className={`text-xs px-2 py-1 rounded-full ${
                               isOverdue
-                                ? "text-red-600"
+                                ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
                                 : daysLeft <= 3
-                                  ? "text-yellow-600"
-                                  : "text-green-600"
+                                  ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
+                                  : "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
                             }`}
                           >
                             {isOverdue
@@ -266,39 +266,51 @@ export default function MyLoansPage() {
             <CardTitle>Recently Returned</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 border rounded-lg">
-                <div>
-                  <h3 className="font-medium">Pride and Prejudice</h3>
-                  <p className="text-sm text-muted-foreground">Jane Austen</p>
-                  <p className="text-xs text-muted-foreground">
-                    Returned: Jan 10, 2024
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  <button className="text-blue-500 hover:text-blue-600 text-sm">
-                    Rate Book
-                  </button>
-                </div>
+            {loading ? (
+              <div className="text-center py-4 text-muted-foreground">
+                <div className="animate-pulse">Loading returned books...</div>
               </div>
+            ) : (
+              (() => {
+                const returnedLoans = loans
+                  .filter(loan => loan.status === "returned" && loan.loan_return_date)
+                  .sort((a, b) => new Date(b.loan_return_date!).getTime() - new Date(a.loan_return_date!).getTime())
+                  .slice(0, 3); // Show only the 3 most recent returns
 
-              <div className="flex justify-between items-center p-3 border rounded-lg">
-                <div>
-                  <h3 className="font-medium">The Catcher in the Rye</h3>
-                  <p className="text-sm text-muted-foreground">J.D. Salinger</p>
-                  <p className="text-xs text-muted-foreground">
-                    Returned: Jan 8, 2024
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                  <button className="text-blue-500 hover:text-blue-600 text-sm">
-                    Rate Book
-                  </button>
-                </div>
-              </div>
-            </div>
+                return returnedLoans.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium mb-2">No Recent Returns</h3>
+                    <p>You haven't returned any books recently</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {returnedLoans.map((loan) => {
+                      const book = loan.bookId as Book;
+                      return (
+                        <div key={loan._id} className="flex justify-between items-center p-3 border rounded-lg">
+                          <div>
+                            <h3 className="font-medium">{book?.book_title || "Unknown Book"}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {typeof book?.authorId === "object"
+                                ? book.authorId.author_name
+                                : "Unknown Author"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Returned: {new Date(loan.loan_return_date!).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-5 w-5 text-green-500" />
+                            <span className="text-xs text-muted-foreground">Returned</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()
+            )}
           </CardContent>
         </Card>
 
@@ -313,20 +325,76 @@ export default function MyLoansPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-12 text-muted-foreground">
-              <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-medium mb-2">
-                Complete Loan History
-              </h3>
-              <p className="mb-4">
-                View your complete borrowing history with detailed statistics
-              </p>
-              <div className="text-sm space-y-1">
-                <div>• Track all past loans and returns</div>
-                <div>• View reading patterns and preferences</div>
-                <div>• Export loan history data</div>
+            {loading ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <div className="animate-pulse">Loading loan history...</div>
               </div>
-            </div>
+            ) : loans.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground">
+                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <h3 className="text-lg font-medium mb-2">No Loan History</h3>
+                <p className="mb-4">You haven't borrowed any books yet</p>
+                <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md">
+                  Browse Books
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-80 overflow-y-auto">
+                {loans
+                  .sort((a, b) => new Date(b.loan_start_date).getTime() - new Date(a.loan_start_date).getTime())
+                  .map((loan) => {
+                    const book = loan.bookId as Book;
+                    return (
+                      <div
+                        key={loan._id}
+                        className={`flex justify-between items-center p-3 border rounded-lg ${
+                          loan.status === "returned"
+                            ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800"
+                            : loan.status === "overdue"
+                            ? "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800"
+                            : "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
+                        }`}
+                      >
+                        <div className="flex-1">
+                          <h3 className="font-medium">{book?.book_title || "Unknown Book"}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {typeof book?.authorId === "object"
+                              ? book.authorId.author_name
+                              : "Unknown Author"}
+                          </p>
+                          <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                            <span>Borrowed: {new Date(loan.loan_start_date).toLocaleDateString()}</span>
+                            <span>Due: {new Date(loan.loan_due_date).toLocaleDateString()}</span>
+                            {loan.loan_return_date && (
+                              <span>Returned: {new Date(loan.loan_return_date).toLocaleDateString()}</span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="text-right flex items-center gap-2">
+                          <div>
+                            <div className={`text-xs px-2 py-1 rounded-full ${
+                              loan.status === "returned"
+                                ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                                : loan.status === "overdue"
+                                ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                                : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                            }`}>
+                              {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
+                            </div>
+                          </div>
+                          {loan.status === "returned" ? (
+                            <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          ) : loan.status === "overdue" ? (
+                            <Clock className="h-4 w-4 text-red-500 flex-shrink-0" />
+                          ) : (
+                            <BookOpen className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
