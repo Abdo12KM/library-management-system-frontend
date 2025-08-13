@@ -2,13 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -330,15 +324,14 @@ export default function StaffManagementPage() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Staff Members</CardTitle>
-              <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center space-x-4 flex-1">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   <Input
                     placeholder="Search staff..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-8 w-64"
+                    className="pl-10"
                   />
                 </div>
                 <DropdownMenu>
@@ -389,6 +382,9 @@ export default function StaffManagementPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
+              <div className="text-sm text-muted-foreground">
+                {filteredStaff.length} of {staff.length} staff members
+              </div>
             </div>
           </CardHeader>
         </Card>
@@ -415,7 +411,10 @@ export default function StaffManagementPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredStaff.map((member) => (
-              <Card key={member._id} className="relative">
+              <Card
+                key={member._id}
+                className="hover:shadow-lg group transition-shadow dark:shadow-gray-700 relative"
+              >
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center space-x-3">
@@ -423,7 +422,7 @@ export default function StaffManagementPage() {
                         <Users className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <CardTitle className="text-base">
+                        <CardTitle className=" group-hover:text-blue-500 text-base">
                           {member.staff_fname} {member.staff_lname}
                         </CardTitle>
                         <Badge

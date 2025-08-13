@@ -174,10 +174,12 @@ export default function FinesPage() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [finesResponse, loansResponse] = await Promise.all([
-        finesApi.getAll(),
-        loansApi.getAll(),
-      ]);
+      const [createFinesResponse, finesResponse, loansResponse] =
+        await Promise.all([
+          finesApi.createForOverdueLoans(),
+          finesApi.getAll(),
+          loansApi.getAll(),
+        ]);
 
       setFines(finesResponse.data.fines);
       setLoans(loansResponse.data.loans);
@@ -218,9 +220,12 @@ export default function FinesPage() {
   const handleCreateOverdueFines = async () => {
     try {
       const response = await finesApi.createForOverdueLoans();
-      toast.success(
-        `Created ${response.data.createdFines} new fines for overdue loans`,
-      );
+      const createdCount = response.data.createdFines;
+      if (createdCount > 0) {
+        toast.success(`Created ${createdCount} new fines for overdue loans`);
+      } else {
+        toast("No overdue fines to create", { icon: "ℹ️" });
+      }
       fetchData();
     } catch (error) {
       toast.error("Failed to create overdue fines");
@@ -285,19 +290,23 @@ export default function FinesPage() {
     );
   }
 
-  const loanOptions = loans.map((loan) => {
-    const bookTitle =
-      typeof loan.bookId === "object" ? loan.bookId.book_title : "Unknown Book";
-    const readerName =
-      typeof loan.readerId === "object"
-        ? `${loan.readerId.reader_fname} ${loan.readerId.reader_lname}`
-        : "Unknown Reader";
+  const loanOptions = loans
+    .filter((loan) => loan.status === "active")
+    .map((loan) => {
+      const bookTitle =
+        typeof loan.bookId === "object"
+          ? loan.bookId.book_title
+          : "Unknown Book";
+      const readerName =
+        typeof loan.readerId === "object"
+          ? `${loan.readerId.reader_fname} ${loan.readerId.reader_lname}`
+          : "Unknown Reader";
 
-    return {
-      value: loan._id,
-      label: `${bookTitle} - ${readerName}`,
-    };
-  });
+      return {
+        value: loan._id,
+        label: `${bookTitle} - ${readerName}`,
+      };
+    });
 
   return (
     <DashboardLayout>
@@ -315,7 +324,7 @@ export default function FinesPage() {
           <div className="flex items-center space-x-2">
             <Button variant="outline" onClick={handleCreateOverdueFines}>
               <Clock className="h-4 w-4 mr-2" />
-              Create Overdue Fines
+              Check Overdue Fines
             </Button>
             <Button
               className="flex items-center space-x-2"
@@ -603,7 +612,7 @@ export default function FinesPage() {
                           Status
                         </span>
                         <Badge
-                          className={`text-xs ${getStatusColor(fine.status)}`}
+                          className={`text-xs capitalize ${getStatusColor(fine.status)}`}
                         >
                           {fine.status}
                         </Badge>

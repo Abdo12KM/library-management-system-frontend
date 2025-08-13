@@ -351,7 +351,7 @@ export const finesApi = {
   createForOverdueLoans: async (): Promise<
     ApiResponse<{ createdFines: number }> & { message: string }
   > => {
-    const response = await api.post("/fines/overdue");
+    const response = await api.post("/fines/create-overdue");
     return response.data;
   },
 };
