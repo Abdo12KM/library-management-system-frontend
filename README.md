@@ -5,6 +5,7 @@ A modern, responsive library management system built with Next.js, TypeScript, a
 ## 🚀 Features
 
 ### Reader Features
+
 - **Dashboard**: Overview of active loans, due dates, and outstanding fines
 - **Book Catalog**: Browse and search through the library's book collection
 - **My Loans**: Track current and past book loans with status indicators
@@ -12,6 +13,7 @@ A modern, responsive library management system built with Next.js, TypeScript, a
 - **Profile Management**: Update personal information and account settings
 
 ### Staff/Admin Features
+
 - **Administrative Dashboard**: System-wide statistics and insights
 - **Book Management**: Add, edit, and manage book inventory
 - **Author & Publisher Management**: Maintain author and publisher databases
@@ -21,6 +23,7 @@ A modern, responsive library management system built with Next.js, TypeScript, a
 - **Fine Management**: Track and manage library fines
 
 ### Authentication
+
 - Separate login systems for readers and staff
 - Role-based access control (Reader, Librarian, Admin)
 - Secure JWT-based authentication
@@ -121,25 +124,30 @@ Open [http://localhost:3000](http://localhost:3000) in your browser to see the a
 ## 🎨 Features Overview
 
 ### Dashboard
+
 - **Reader Dashboard**: Personal overview with active loans, due dates, and fine summaries
 - **Admin Dashboard**: System-wide statistics, user metrics, and operational insights
 
 ### Book Management
+
 - Comprehensive book catalog with search and filtering
 - Book status tracking (available, borrowed, maintenance, lost)
 - Author and publisher relationship management
 
 ### Loan System
+
 - Real-time loan tracking with due date calculations
 - Overdue detection and fine generation
 - Loan history with detailed records
 
 ### Fine Management
+
 - Automated fine calculation for overdue books
 - In-person payment processing (no online payments)
 - Fine history and payment tracking
 
 ### User Management
+
 - Role-based access control
 - Profile management for readers
 - Staff account management for administrators
@@ -165,6 +173,7 @@ The application supports both light and dark themes with automatic system prefer
 ## 📱 Responsive Design
 
 Fully responsive design that works seamlessly across:
+
 - Desktop computers
 - Tablets
 - Mobile devices
@@ -181,6 +190,7 @@ Fully responsive design that works seamlessly across:
 ## 🔗 API Integration
 
 The frontend integrates with a RESTful API backend providing:
+
 - User authentication and authorization
 - CRUD operations for all entities (books, authors, publishers, loans, fines)
 - Real-time data updates
@@ -224,7 +234,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Authors
 
-- **Abdo12KM** - *Initial work* - [GitHub](https://github.com/Abdo12KM)
+- **Abdo12KM** - _Initial work_ - [GitHub](https://github.com/Abdo12KM)
 
 ## 🙏 Acknowledgments
 

@@ -73,7 +73,8 @@ export default function MyFinesPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">My Fines</h1>
             <p className="text-muted-foreground">
-              View your outstanding library fines - Payment must be made in person at the library
+              View your outstanding library fines - Payment must be made in
+              person at the library
             </p>
           </div>
           <div className="bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-md flex items-center gap-2 border border-blue-200 dark:border-blue-800">
@@ -154,12 +155,16 @@ export default function MyFinesPage() {
           <CardContent>
             {loading ? (
               <div className="text-center py-4 text-muted-foreground">
-                <div className="animate-pulse">Loading outstanding fines...</div>
+                <div className="animate-pulse">
+                  Loading outstanding fines...
+                </div>
               </div>
             ) : (
               (() => {
-                const outstandingFines = fines.filter(fine => fine.status === "pending");
-                
+                const outstandingFines = fines.filter(
+                  (fine) => fine.status === "pending",
+                );
+
                 return outstandingFines.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-green-500" />
@@ -171,12 +176,22 @@ export default function MyFinesPage() {
                 ) : (
                   <div className="space-y-4">
                     {outstandingFines.map((fine, index) => {
-                      const dueDate = typeof fine.loanId === 'object' && fine.loanId?.loan_due_date 
-                        ? new Date(fine.loanId.loan_due_date)
-                        : null;
+                      const dueDate =
+                        typeof fine.loanId === "object" &&
+                        fine.loanId?.loan_due_date
+                          ? new Date(fine.loanId.loan_due_date)
+                          : null;
                       const currentDate = new Date();
-                      const daysOverdue = dueDate ? Math.max(0, Math.floor((currentDate.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24))) : 0;
-                      
+                      const daysOverdue = dueDate
+                        ? Math.max(
+                            0,
+                            Math.floor(
+                              (currentDate.getTime() - dueDate.getTime()) /
+                                (1000 * 60 * 60 * 24),
+                            ),
+                          )
+                        : 0;
+
                       return (
                         <div
                           key={`${fine._id || index}`}
@@ -187,29 +202,42 @@ export default function MyFinesPage() {
                           }`}
                         >
                           <div className="flex-1">
-                            <h3 className={`font-medium ${
-                              fine.accumulated_amount >= 10
-                                ? "text-red-700 dark:text-red-400"
-                                : "text-yellow-700 dark:text-yellow-400"
-                            }`}>
-                              {typeof fine.loanId === 'object' && fine.loanId?.bookId && typeof fine.loanId.bookId === 'object' 
-                                ? fine.loanId.bookId.book_title 
+                            <h3
+                              className={`font-medium ${
+                                fine.accumulated_amount >= 10
+                                  ? "text-red-700 dark:text-red-400"
+                                  : "text-yellow-700 dark:text-yellow-400"
+                              }`}
+                            >
+                              {typeof fine.loanId === "object" &&
+                              fine.loanId?.bookId &&
+                              typeof fine.loanId.bookId === "object"
+                                ? fine.loanId.bookId.book_title
                                 : "Unknown Book"}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                              {daysOverdue > 0 ? `${daysOverdue} days overdue` : "Recently overdue"}
+                              {daysOverdue > 0
+                                ? `${daysOverdue} days overdue`
+                                : "Recently overdue"}
                             </p>
                             <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                               <span>
-                                Due Date: {dueDate ? dueDate.toLocaleDateString() : "N/A"}
+                                Due Date:{" "}
+                                {dueDate ? dueDate.toLocaleDateString() : "N/A"}
                               </span>
-                              <span>Penalty Rate: ${fine.penalty_rate.toFixed(2)}</span>
+                              <span>
+                                Penalty Rate: ${fine.penalty_rate.toFixed(2)}
+                              </span>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className={`text-xl font-bold ${
-                              fine.accumulated_amount >= 10 ? "text-red-600" : "text-yellow-600"
-                            }`}>
+                            <div
+                              className={`text-xl font-bold ${
+                                fine.accumulated_amount >= 10
+                                  ? "text-red-600"
+                                  : "text-yellow-600"
+                              }`}
+                            >
                               ${fine.accumulated_amount.toFixed(2)}
                             </div>
                             <div className="mt-2 text-xs text-muted-foreground">
@@ -229,18 +257,25 @@ export default function MyFinesPage() {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="font-medium text-amber-700 dark:text-amber-300 mb-2">Payment Information</h4>
+                  <h4 className="font-medium text-amber-700 dark:text-amber-300 mb-2">
+                    Payment Information
+                  </h4>
                   <p className="text-sm text-amber-600 dark:text-amber-400 mb-3">
-                    All fine payments must be made in person at the library. Online payment is not available.
+                    All fine payments must be made in person at the library.
+                    Online payment is not available.
                   </p>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                      <span>Visit the library front desk during operating hours</span>
+                      <span>
+                        Visit the library front desk during operating hours
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
-                      <span>Accepted payments: Cash, Credit Card, Debit Card</span>
+                      <span>
+                        Accepted payments: Cash, Credit Card, Debit Card
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
@@ -265,36 +300,52 @@ export default function MyFinesPage() {
               </div>
             ) : (
               (() => {
-                const paidFines = fines.filter(fine => fine.status === "paid");
+                const paidFines = fines.filter(
+                  (fine) => fine.status === "paid",
+                );
                 const recentPaidFines = paidFines
-                  .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                  .sort(
+                    (a, b) =>
+                      new Date(b.updatedAt).getTime() -
+                      new Date(a.updatedAt).getTime(),
+                  )
                   .slice(0, 3); // Show only the 3 most recent payments
 
                 return recentPaidFines.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium mb-2">No Recent Payments</h3>
+                    <h3 className="text-lg font-medium mb-2">
+                      No Recent Payments
+                    </h3>
                     <p>You haven't made any fine payments recently</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {recentPaidFines.map((fine, index) => (
-                      <div key={`${fine._id || index}`} className="flex justify-between items-center p-3 border rounded-lg">
+                      <div
+                        key={`${fine._id || index}`}
+                        className="flex justify-between items-center p-3 border rounded-lg"
+                      >
                         <div>
                           <h3 className="font-medium">
-                            {typeof fine.loanId === 'object' && fine.loanId?.bookId && typeof fine.loanId.bookId === 'object' 
-                              ? fine.loanId.bookId.book_title 
+                            {typeof fine.loanId === "object" &&
+                            fine.loanId?.bookId &&
+                            typeof fine.loanId.bookId === "object"
+                              ? fine.loanId.bookId.book_title
                               : "Unknown Book"}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            Paid on {new Date(fine.updatedAt).toLocaleDateString()}
+                            Paid on{" "}
+                            {new Date(fine.updatedAt).toLocaleDateString()}
                           </p>
                           <p className="text-xs text-muted-foreground">
                             Payment Method: In Person
                           </p>
                         </div>
                         <div className="text-right">
-                          <div className="font-medium text-green-600">${fine.accumulated_amount.toFixed(2)}</div>
+                          <div className="font-medium text-green-600">
+                            ${fine.accumulated_amount.toFixed(2)}
+                          </div>
                           <CheckCircle className="h-4 w-4 text-green-500 ml-auto mt-1" />
                         </div>
                       </div>
@@ -336,41 +387,58 @@ export default function MyFinesPage() {
                     >
                       <div className="flex-1">
                         <h3 className="font-medium">
-                          {typeof fine.loanId === 'object' && fine.loanId?.bookId && typeof fine.loanId.bookId === 'object' 
-                            ? fine.loanId.bookId.book_title 
+                          {typeof fine.loanId === "object" &&
+                          fine.loanId?.bookId &&
+                          typeof fine.loanId.bookId === "object"
+                            ? fine.loanId.bookId.book_title
                             : "Unknown Book"}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          {fine.status === "paid" 
+                          {fine.status === "paid"
                             ? `Paid on ${new Date(fine.updatedAt).toLocaleDateString()}`
-                            : `Outstanding since ${new Date(fine.createdAt).toLocaleDateString()}`
-                          }
+                            : `Outstanding since ${new Date(fine.createdAt).toLocaleDateString()}`}
                         </p>
                         <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
                           <span>
-                            Due: {typeof fine.loanId === 'object' && fine.loanId?.loan_due_date 
-                              ? new Date(fine.loanId.loan_due_date).toLocaleDateString() 
+                            Due:{" "}
+                            {typeof fine.loanId === "object" &&
+                            fine.loanId?.loan_due_date
+                              ? new Date(
+                                  fine.loanId.loan_due_date,
+                                ).toLocaleDateString()
                               : "N/A"}
                           </span>
-                          <span>Penalty Rate: ${fine.penalty_rate || "0.00"}</span>
-                          <span>Fine Due: {new Date(fine.fine_due_date).toLocaleDateString()}</span>
+                          <span>
+                            Penalty Rate: ${fine.penalty_rate || "0.00"}
+                          </span>
+                          <span>
+                            Fine Due:{" "}
+                            {new Date(fine.fine_due_date).toLocaleDateString()}
+                          </span>
                         </div>
                       </div>
                       <div className="text-right flex items-center gap-2">
                         <div>
-                          <div className={`font-medium ${
-                            fine.status === "paid" ? "text-green-600" : "text-red-600"
-                          }`}>
+                          <div
+                            className={`font-medium ${
+                              fine.status === "paid"
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
                             ${fine.accumulated_amount?.toFixed(2) || "0.00"}
                           </div>
-                          <div className={`text-xs px-2 py-1 rounded-full ${
-                            fine.status === "paid"
-                              ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                              : fine.status === "waived"
-                              ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                              : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
-                          }`}>
-                            {fine.status.charAt(0).toUpperCase() + fine.status.slice(1)}
+                          <div
+                            className={`text-xs px-2 py-1 rounded-full ${
+                              fine.status === "paid"
+                                ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                                : fine.status === "waived"
+                                  ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                                  : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                            }`}
+                          >
+                            {fine.status.charAt(0).toUpperCase() +
+                              fine.status.slice(1)}
                           </div>
                         </div>
                         {fine.status === "paid" ? (

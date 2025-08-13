@@ -273,14 +273,23 @@ export default function MyLoansPage() {
             ) : (
               (() => {
                 const returnedLoans = loans
-                  .filter(loan => loan.status === "returned" && loan.loan_return_date)
-                  .sort((a, b) => new Date(b.loan_return_date!).getTime() - new Date(a.loan_return_date!).getTime())
+                  .filter(
+                    (loan) =>
+                      loan.status === "returned" && loan.loan_return_date,
+                  )
+                  .sort(
+                    (a, b) =>
+                      new Date(b.loan_return_date!).getTime() -
+                      new Date(a.loan_return_date!).getTime(),
+                  )
                   .slice(0, 3); // Show only the 3 most recent returns
 
                 return returnedLoans.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium mb-2">No Recent Returns</h3>
+                    <h3 className="text-lg font-medium mb-2">
+                      No Recent Returns
+                    </h3>
                     <p>You haven't returned any books recently</p>
                   </div>
                 ) : (
@@ -288,21 +297,31 @@ export default function MyLoansPage() {
                     {returnedLoans.map((loan) => {
                       const book = loan.bookId as Book;
                       return (
-                        <div key={loan._id} className="flex justify-between items-center p-3 border rounded-lg">
+                        <div
+                          key={loan._id}
+                          className="flex justify-between items-center p-3 border rounded-lg"
+                        >
                           <div>
-                            <h3 className="font-medium">{book?.book_title || "Unknown Book"}</h3>
+                            <h3 className="font-medium">
+                              {book?.book_title || "Unknown Book"}
+                            </h3>
                             <p className="text-sm text-muted-foreground">
                               {typeof book?.authorId === "object"
                                 ? book.authorId.author_name
                                 : "Unknown Author"}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              Returned: {new Date(loan.loan_return_date!).toLocaleDateString()}
+                              Returned:{" "}
+                              {new Date(
+                                loan.loan_return_date!,
+                              ).toLocaleDateString()}
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
                             <CheckCircle className="h-5 w-5 text-green-500" />
-                            <span className="text-xs text-muted-foreground">Returned</span>
+                            <span className="text-xs text-muted-foreground">
+                              Returned
+                            </span>
                           </div>
                         </div>
                       );
@@ -341,7 +360,11 @@ export default function MyLoansPage() {
             ) : (
               <div className="space-y-3 max-h-80 overflow-y-auto">
                 {loans
-                  .sort((a, b) => new Date(b.loan_start_date).getTime() - new Date(a.loan_start_date).getTime())
+                  .sort(
+                    (a, b) =>
+                      new Date(b.loan_start_date).getTime() -
+                      new Date(a.loan_start_date).getTime(),
+                  )
                   .map((loan) => {
                     const book = loan.bookId as Book;
                     return (
@@ -351,35 +374,55 @@ export default function MyLoansPage() {
                           loan.status === "returned"
                             ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800"
                             : loan.status === "overdue"
-                            ? "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800"
-                            : "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
+                              ? "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800"
+                              : "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
                         }`}
                       >
                         <div className="flex-1">
-                          <h3 className="font-medium">{book?.book_title || "Unknown Book"}</h3>
+                          <h3 className="font-medium">
+                            {book?.book_title || "Unknown Book"}
+                          </h3>
                           <p className="text-sm text-muted-foreground">
                             {typeof book?.authorId === "object"
                               ? book.authorId.author_name
                               : "Unknown Author"}
                           </p>
                           <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
-                            <span>Borrowed: {new Date(loan.loan_start_date).toLocaleDateString()}</span>
-                            <span>Due: {new Date(loan.loan_due_date).toLocaleDateString()}</span>
+                            <span>
+                              Borrowed:{" "}
+                              {new Date(
+                                loan.loan_start_date,
+                              ).toLocaleDateString()}
+                            </span>
+                            <span>
+                              Due:{" "}
+                              {new Date(
+                                loan.loan_due_date,
+                              ).toLocaleDateString()}
+                            </span>
                             {loan.loan_return_date && (
-                              <span>Returned: {new Date(loan.loan_return_date).toLocaleDateString()}</span>
+                              <span>
+                                Returned:{" "}
+                                {new Date(
+                                  loan.loan_return_date,
+                                ).toLocaleDateString()}
+                              </span>
                             )}
                           </div>
                         </div>
                         <div className="text-right flex items-center gap-2">
                           <div>
-                            <div className={`text-xs px-2 py-1 rounded-full ${
-                              loan.status === "returned"
-                                ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                                : loan.status === "overdue"
-                                ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
-                                : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
-                            }`}>
-                              {loan.status.charAt(0).toUpperCase() + loan.status.slice(1)}
+                            <div
+                              className={`text-xs px-2 py-1 rounded-full ${
+                                loan.status === "returned"
+                                  ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                                  : loan.status === "overdue"
+                                    ? "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                                    : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                              }`}
+                            >
+                              {loan.status.charAt(0).toUpperCase() +
+                                loan.status.slice(1)}
                             </div>
                           </div>
                           {loan.status === "returned" ? (
