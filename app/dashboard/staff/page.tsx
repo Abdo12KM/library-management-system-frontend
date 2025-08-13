@@ -388,7 +388,8 @@ export default function StaffManagementPage() {
                       ) : (
                         <SortDesc className="h-4 w-4 mr-2" />
                       )}
-                      Sort: {getSortDisplayName(sortBy)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
+                      Sort: {getSortDisplayName(sortBy)} (
+                      {sortOrder === "asc" ? "A-Z" : "Z-A"})
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
