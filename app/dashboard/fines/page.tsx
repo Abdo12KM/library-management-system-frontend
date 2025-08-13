@@ -23,7 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Form } from "@/components/ui/form";
-import { TextField, SelectField } from "@/components/ui/form-fields";
+import { TextField, SelectField, ComboboxField } from "@/components/ui/form-fields";
 import { Modal } from "@/components/ui/modal";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { finesApi, loansApi } from "@/lib/api";
@@ -761,11 +761,13 @@ export default function FinesPage() {
               onSubmit={addForm.handleSubmit(handleAddFine)}
               className="space-y-4"
             >
-              <SelectField
+              <ComboboxField
                 control={addForm.control}
                 name="loanId"
                 label="Loan"
                 placeholder="Select a loan"
+                searchPlaceholder="Search loans..."
+                emptyText="No active loans found."
                 options={loanOptions}
                 required
               />

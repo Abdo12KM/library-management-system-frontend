@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./select";
+import { Combobox, type ComboboxOption } from "./combobox";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
 
 interface BaseFieldProps<T extends FieldValues = FieldValues> {
@@ -41,6 +42,13 @@ interface TextareaFieldProps<T extends FieldValues = FieldValues>
 interface SelectFieldProps<T extends FieldValues = FieldValues>
   extends BaseFieldProps<T> {
   options: Array<{ value: string; label: string }>;
+}
+
+interface ComboboxFieldProps<T extends FieldValues = FieldValues>
+  extends BaseFieldProps<T> {
+  options: ComboboxOption[];
+  searchPlaceholder?: string;
+  emptyText?: string;
 }
 
 export function TextField<T extends FieldValues = FieldValues>({
@@ -148,6 +156,46 @@ export function SelectField<T extends FieldValues = FieldValues>({
               ))}
             </SelectContent>
           </Select>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+}
+
+export function ComboboxField<T extends FieldValues = FieldValues>({
+  control,
+  name,
+  label,
+  placeholder,
+  searchPlaceholder = "Search...",
+  emptyText = "No option found.",
+  options,
+  disabled = false,
+  required = false,
+}: ComboboxFieldProps<T>) {
+  return (
+    <ShadcnFormField
+      control={control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>
+            {label}
+            {required && <span className="text-red-500 ml-1">*</span>}
+          </FormLabel>
+          <FormControl>
+            <Combobox
+              options={options}
+              value={field.value}
+              onValueChange={field.onChange}
+              placeholder={placeholder}
+              searchPlaceholder={searchPlaceholder}
+              emptyText={emptyText}
+              disabled={disabled}
+              className="w-full"
+            />
+          </FormControl>
           <FormMessage />
         </FormItem>
       )}

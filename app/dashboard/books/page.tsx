@@ -20,6 +20,7 @@ import {
   TextField,
   TextareaField,
   SelectField,
+  ComboboxField,
 } from "@/components/ui/form-fields";
 import { Modal } from "@/components/ui/modal";
 import {
@@ -831,22 +832,26 @@ export default function BooksPage() {
                     required
                   />
                 </div>
-                <SelectField
+                <ComboboxField
                   control={addForm.control}
                   name="authorId"
                   label="Author"
                   placeholder="Select Author"
+                  searchPlaceholder="Search authors..."
+                  emptyText="No authors found."
                   options={authors.map((author) => ({
                     value: author._id,
                     label: author.author_name,
                   }))}
                   required
                 />
-                <SelectField
+                <ComboboxField
                   control={addForm.control}
                   name="publisherId"
                   label="Publisher"
                   placeholder="Select Publisher"
+                  searchPlaceholder="Search publishers..."
+                  emptyText="No publishers found."
                   options={publishers.map((publisher) => ({
                     value: publisher._id,
                     label: publisher.publisher_name,
@@ -954,22 +959,26 @@ export default function BooksPage() {
                     required
                   />
                 </div>
-                <SelectField
+                <ComboboxField
                   control={editForm.control}
                   name="authorId"
                   label="Author"
                   placeholder="Select Author"
+                  searchPlaceholder="Search authors..."
+                  emptyText="No authors found."
                   options={authors.map((author) => ({
                     value: author._id,
                     label: author.author_name,
                   }))}
                   required
                 />
-                <SelectField
+                <ComboboxField
                   control={editForm.control}
                   name="publisherId"
                   label="Publisher"
                   placeholder="Select Publisher"
+                  searchPlaceholder="Search publishers..."
+                  emptyText="No publishers found."
                   options={publishers.map((publisher) => ({
                     value: publisher._id,
                     label: publisher.publisher_name,

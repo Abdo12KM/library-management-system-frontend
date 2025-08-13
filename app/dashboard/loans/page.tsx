@@ -33,7 +33,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Form } from "@/components/ui/form";
-import { SelectField } from "@/components/ui/form-fields";
+import { SelectField, ComboboxField } from "@/components/ui/form-fields";
 import { Modal } from "@/components/ui/modal";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { loansApi, booksApi, readersApi } from "@/lib/api";
@@ -794,19 +794,23 @@ export default function LoansPage() {
               onSubmit={addForm.handleSubmit(handleAddLoan)}
               className="space-y-4"
             >
-              <SelectField
+              <ComboboxField
                 control={addForm.control}
                 name="bookId"
                 label="Book"
                 placeholder="Select a book"
+                searchPlaceholder="Search books..."
+                emptyText="No available books found."
                 options={bookOptions}
                 required
               />
-              <SelectField
+              <ComboboxField
                 control={addForm.control}
                 name="readerId"
                 label="Reader"
                 placeholder="Select a reader"
+                searchPlaceholder="Search readers..."
+                emptyText="No readers found."
                 options={readerOptions}
                 required
               />
