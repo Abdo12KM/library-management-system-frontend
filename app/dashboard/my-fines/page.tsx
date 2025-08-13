@@ -73,13 +73,13 @@ export default function MyFinesPage() {
           <div>
             <h1 className="text-3xl font-bold tracking-tight">My Fines</h1>
             <p className="text-muted-foreground">
-              View and pay your outstanding library fines
+              View your outstanding library fines - Payment must be made in person at the library
             </p>
           </div>
-          <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-md flex items-center gap-2">
-            <CreditCard className="h-4 w-4" />
-            Pay All Fines
-          </button>
+          <div className="bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-md flex items-center gap-2 border border-blue-200 dark:border-blue-800">
+            <AlertTriangle className="h-4 w-4" />
+            Pay in Person Only
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -152,66 +152,102 @@ export default function MyFinesPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-4 border-2 border-red-200 rounded-lg bg-red-50 dark:bg-red-950/20">
-                <div className="flex-1">
-                  <h3 className="font-medium text-red-700 dark:text-red-400">
-                    The Great Gatsby
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    7 days overdue
+            {loading ? (
+              <div className="text-center py-4 text-muted-foreground">
+                <div className="animate-pulse">Loading outstanding fines...</div>
+              </div>
+            ) : (
+              (() => {
+                const outstandingFines = fines.filter(fine => fine.status === "pending");
+                
+                return outstandingFines.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50 text-green-500" />
+                    <h3 className="text-lg font-medium mb-2 text-green-700 dark:text-green-400">
+                      No Outstanding Fines
+                    </h3>
+                    <p>Great! You currently have no outstanding fines.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {outstandingFines.map((fine, index) => {
+                      const dueDate = typeof fine.loanId === 'object' && fine.loanId?.loan_due_date 
+                        ? new Date(fine.loanId.loan_due_date)
+                        : null;
+                      const currentDate = new Date();
+                      const daysOverdue = dueDate ? Math.max(0, Math.floor((currentDate.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24))) : 0;
+                      
+                      return (
+                        <div
+                          key={`${fine._id || index}`}
+                          className={`flex justify-between items-center p-4 border-2 rounded-lg ${
+                            fine.accumulated_amount >= 10
+                              ? "border-red-200 bg-red-50 dark:bg-red-950/20"
+                              : "border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20"
+                          }`}
+                        >
+                          <div className="flex-1">
+                            <h3 className={`font-medium ${
+                              fine.accumulated_amount >= 10
+                                ? "text-red-700 dark:text-red-400"
+                                : "text-yellow-700 dark:text-yellow-400"
+                            }`}>
+                              {typeof fine.loanId === 'object' && fine.loanId?.bookId && typeof fine.loanId.bookId === 'object' 
+                                ? fine.loanId.bookId.book_title 
+                                : "Unknown Book"}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                              {daysOverdue > 0 ? `${daysOverdue} days overdue` : "Recently overdue"}
+                            </p>
+                            <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                              <span>
+                                Due Date: {dueDate ? dueDate.toLocaleDateString() : "N/A"}
+                              </span>
+                              <span>Penalty Rate: ${fine.penalty_rate.toFixed(2)}</span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className={`text-xl font-bold ${
+                              fine.accumulated_amount >= 10 ? "text-red-600" : "text-yellow-600"
+                            }`}>
+                              ${fine.accumulated_amount.toFixed(2)}
+                            </div>
+                            <div className="mt-2 text-xs text-muted-foreground">
+                              Visit library to pay
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()
+            )}
+
+            {/* Payment Information */}
+            <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h4 className="font-medium text-amber-700 dark:text-amber-300 mb-2">Payment Information</h4>
+                  <p className="text-sm text-amber-600 dark:text-amber-400 mb-3">
+                    All fine payments must be made in person at the library. Online payment is not available.
                   </p>
-                  <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                    <span>Due Date: Jan 28, 2024</span>
-                    <span>Daily Rate: $1.50</span>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                      <span>Visit the library front desk during operating hours</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                      <span>Accepted payments: Cash, Credit Card, Debit Card</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-amber-500 rounded-full"></div>
+                      <span>Bring your library card and photo ID</span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-red-600">$10.50</div>
-                  <button className="mt-2 bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-1 rounded">
-                    Pay Now
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-center p-4 border-2 border-yellow-200 rounded-lg bg-yellow-50 dark:bg-yellow-950/20">
-                <div className="flex-1">
-                  <h3 className="font-medium text-yellow-700 dark:text-yellow-400">
-                    To Kill a Mockingbird
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    2 days overdue
-                  </p>
-                  <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                    <span>Due Date: Feb 1, 2024</span>
-                    <span>Daily Rate: $2.50</span>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-yellow-600">$5.00</div>
-                  <button className="mt-2 bg-yellow-600 hover:bg-yellow-700 text-white text-sm px-4 py-1 rounded">
-                    Pay Now
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Payment Options */}
-            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-              <h4 className="font-medium mb-3">Payment Options</h4>
-              <div className="grid gap-3 md:grid-cols-3">
-                <button className="flex items-center gap-2 p-3 border rounded-lg hover:bg-white dark:hover:bg-gray-800">
-                  <CreditCard className="h-5 w-5 text-blue-500" />
-                  <span className="text-sm">Credit Card</span>
-                </button>
-                <button className="flex items-center gap-2 p-3 border rounded-lg hover:bg-white dark:hover:bg-gray-800">
-                  <DollarSign className="h-5 w-5 text-green-500" />
-                  <span className="text-sm">Cash (In Person)</span>
-                </button>
-                <button className="flex items-center gap-2 p-3 border rounded-lg hover:bg-white dark:hover:bg-gray-800">
-                  <Receipt className="h-5 w-5 text-purple-500" />
-                  <span className="text-sm">Bank Transfer</span>
-                </button>
               </div>
             </div>
           </CardContent>
@@ -223,39 +259,50 @@ export default function MyFinesPage() {
             <CardTitle>Recent Payments</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 border rounded-lg">
-                <div>
-                  <h3 className="font-medium">Pride and Prejudice</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Paid on Jan 15, 2024
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Payment Method: Credit Card
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="font-medium text-green-600">$12.00</div>
-                  <CheckCircle className="h-4 w-4 text-green-500 ml-auto mt-1" />
-                </div>
+            {loading ? (
+              <div className="text-center py-4 text-muted-foreground">
+                <div className="animate-pulse">Loading recent payments...</div>
               </div>
+            ) : (
+              (() => {
+                const paidFines = fines.filter(fine => fine.status === "paid");
+                const recentPaidFines = paidFines
+                  .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                  .slice(0, 3); // Show only the 3 most recent payments
 
-              <div className="flex justify-between items-center p-3 border rounded-lg">
-                <div>
-                  <h3 className="font-medium">The Catcher in the Rye</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Paid on Jan 10, 2024
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    Payment Method: Cash
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="font-medium text-green-600">$8.50</div>
-                  <CheckCircle className="h-4 w-4 text-green-500 ml-auto mt-1" />
-                </div>
-              </div>
-            </div>
+                return recentPaidFines.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <CheckCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <h3 className="text-lg font-medium mb-2">No Recent Payments</h3>
+                    <p>You haven't made any fine payments recently</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {recentPaidFines.map((fine, index) => (
+                      <div key={`${fine._id || index}`} className="flex justify-between items-center p-3 border rounded-lg">
+                        <div>
+                          <h3 className="font-medium">
+                            {typeof fine.loanId === 'object' && fine.loanId?.bookId && typeof fine.loanId.bookId === 'object' 
+                              ? fine.loanId.bookId.book_title 
+                              : "Unknown Book"}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">
+                            Paid on {new Date(fine.updatedAt).toLocaleDateString()}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Payment Method: In Person
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-medium text-green-600">${fine.accumulated_amount.toFixed(2)}</div>
+                          <CheckCircle className="h-4 w-4 text-green-500 ml-auto mt-1" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()
+            )}
           </CardContent>
         </Card>
 
@@ -266,16 +313,78 @@ export default function MyFinesPage() {
               <CardTitle>Fine History</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                <Receipt className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <h3 className="text-lg font-medium mb-2">
-                  Complete Payment History
-                </h3>
-                <p className="mb-4">View all your fine payments and records</p>
-                <button className="text-primary hover:text-primary/80 text-sm">
-                  View Full History →
-                </button>
-              </div>
+              {loading ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <div className="animate-pulse">Loading fine history...</div>
+                </div>
+              ) : fines.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Receipt className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <h3 className="text-lg font-medium mb-2">No Fine History</h3>
+                  <p className="mb-4">You have no fine records yet</p>
+                </div>
+              ) : (
+                <div className="space-y-3 max-h-80 overflow-y-auto">
+                  {fines.map((fine, index) => (
+                    <div
+                      key={`${fine._id || index}`}
+                      className={`flex justify-between items-center p-3 border rounded-lg ${
+                        fine.status === "paid"
+                          ? "bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800"
+                          : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800"
+                      }`}
+                    >
+                      <div className="flex-1">
+                        <h3 className="font-medium">
+                          {typeof fine.loanId === 'object' && fine.loanId?.bookId && typeof fine.loanId.bookId === 'object' 
+                            ? fine.loanId.bookId.book_title 
+                            : "Unknown Book"}
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          {fine.status === "paid" 
+                            ? `Paid on ${new Date(fine.updatedAt).toLocaleDateString()}`
+                            : `Outstanding since ${new Date(fine.createdAt).toLocaleDateString()}`
+                          }
+                        </p>
+                        <div className="flex items-center gap-4 mt-1 text-xs text-muted-foreground">
+                          <span>
+                            Due: {typeof fine.loanId === 'object' && fine.loanId?.loan_due_date 
+                              ? new Date(fine.loanId.loan_due_date).toLocaleDateString() 
+                              : "N/A"}
+                          </span>
+                          <span>Penalty Rate: ${fine.penalty_rate || "0.00"}</span>
+                          <span>Fine Due: {new Date(fine.fine_due_date).toLocaleDateString()}</span>
+                        </div>
+                      </div>
+                      <div className="text-right flex items-center gap-2">
+                        <div>
+                          <div className={`font-medium ${
+                            fine.status === "paid" ? "text-green-600" : "text-red-600"
+                          }`}>
+                            ${fine.accumulated_amount?.toFixed(2) || "0.00"}
+                          </div>
+                          <div className={`text-xs px-2 py-1 rounded-full ${
+                            fine.status === "paid"
+                              ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                              : fine.status === "waived"
+                              ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                              : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                          }`}>
+                            {fine.status.charAt(0).toUpperCase() + fine.status.slice(1)}
+                          </div>
+                        </div>
+                        {fine.status === "paid" ? (
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                        ) : fine.status === "waived" ? (
+                          <CheckCircle className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                        ) : (
+                          <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
 
