@@ -446,7 +446,7 @@ export default function PublishersPage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2">
             {filteredPublishers.map((publisher) => (
               <Card
                 key={publisher._id}
