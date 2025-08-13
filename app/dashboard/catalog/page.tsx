@@ -21,7 +21,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { booksApi } from "@/lib/api";
-import { Search, BookOpen, Eye, Filter, SortAsc } from "lucide-react";
+import { Search, BookOpen, Eye, Filter, SortAsc, SortDesc } from "lucide-react";
 import type { Book } from "@/types";
 import toast from "react-hot-toast";
 
@@ -175,6 +175,25 @@ export default function CatalogPage() {
     }
   };
 
+  const getSortDisplayName = (sortBy: string) => {
+    switch (sortBy) {
+      case "title":
+        return "Title";
+      case "author":
+        return "Author";
+      case "publisher":
+        return "Publisher";
+      case "pages":
+        return "Pages";
+      case "date":
+        return "Release Date";
+      case "status":
+        return "Status";
+      default:
+        return "Title";
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -251,8 +270,12 @@ export default function CatalogPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      <SortAsc className="h-4 w-4 mr-2" />
-                      Sort
+                      {sortOrder === "asc" ? (
+                        <SortAsc className="h-4 w-4 mr-2" />
+                      ) : (
+                        <SortDesc className="h-4 w-4 mr-2" />
+                      )}
+                      Sort: {getSortDisplayName(sortBy)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>

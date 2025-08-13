@@ -41,6 +41,7 @@ import {
   Trash2,
   Filter,
   SortAsc,
+  SortDesc,
   MoreHorizontal,
 } from "lucide-react";
 import {
@@ -374,6 +375,25 @@ export default function BooksPage() {
     }
   };
 
+  const getSortDisplayName = (sortBy: string) => {
+    switch (sortBy) {
+      case "title":
+        return "Title";
+      case "author":
+        return "Author";
+      case "publisher":
+        return "Publisher";
+      case "pages":
+        return "Pages";
+      case "date":
+        return "Release Date";
+      case "status":
+        return "Status";
+      default:
+        return "Title";
+    }
+  };
+
   const stats = getBookStats();
 
   if (loading) {
@@ -512,8 +532,12 @@ export default function BooksPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      <SortAsc className="h-4 w-4 mr-2" />
-                      Sort
+                      {sortOrder === "asc" ? (
+                        <SortAsc className="h-4 w-4 mr-2" />
+                      ) : (
+                        <SortDesc className="h-4 w-4 mr-2" />
+                      )}
+                      Sort: {getSortDisplayName(sortBy)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>

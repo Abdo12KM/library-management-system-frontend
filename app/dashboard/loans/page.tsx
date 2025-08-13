@@ -50,6 +50,7 @@ import {
   User,
   Calendar,
   SortAsc,
+  SortDesc,
   Filter,
 } from "lucide-react";
 import { useAuthStore } from "@/store";
@@ -299,6 +300,21 @@ export default function LoansPage() {
     return diffDays;
   };
 
+  const getSortDisplayName = (sortBy: string) => {
+    switch (sortBy) {
+      case "book":
+        return "Book";
+      case "reader":
+        return "Reader";
+      case "status":
+        return "Status";
+      case "date":
+        return "Date";
+      default:
+        return "Date";
+    }
+  };
+
   const stats = getLoanStats();
 
   if (loading) {
@@ -472,8 +488,12 @@ export default function LoansPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      <SortAsc className="h-4 w-4 mr-2" />
-                      Sort
+                      {sortOrder === "asc" ? (
+                        <SortAsc className="h-4 w-4 mr-2" />
+                      ) : (
+                        <SortDesc className="h-4 w-4 mr-2" />
+                      )}
+                      Sort: {getSortDisplayName(sortBy)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>

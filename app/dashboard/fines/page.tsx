@@ -36,6 +36,7 @@ import {
   CheckCircle,
   Clock,
   SortAsc,
+  SortDesc,
   CreditCard,
   BookOpen,
   User,
@@ -278,6 +279,21 @@ export default function FinesPage() {
     }).format(amount);
   };
 
+  const getSortDisplayName = (sortBy: string) => {
+    switch (sortBy) {
+      case "amount":
+        return "Amount";
+      case "status":
+        return "Status";
+      case "reader":
+        return "Reader";
+      case "date":
+        return "Date";
+      default:
+        return "Date";
+    }
+  };
+
   const stats = getFineStats();
 
   if (loading) {
@@ -478,8 +494,12 @@ export default function FinesPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      <SortAsc className="h-4 w-4 mr-2" />
-                      Sort
+                      {sortOrder === "asc" ? (
+                        <SortAsc className="h-4 w-4 mr-2" />
+                      ) : (
+                        <SortDesc className="h-4 w-4 mr-2" />
+                      )}
+                      Sort: {getSortDisplayName(sortBy)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>

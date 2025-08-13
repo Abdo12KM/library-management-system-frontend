@@ -36,6 +36,7 @@ import {
   Edit,
   Trash2,
   SortAsc,
+  SortDesc,
   MoreHorizontal,
   Globe,
   BookOpen,
@@ -259,6 +260,21 @@ export default function PublishersPage() {
     return { totalPublishers, activePublishers, newThisMonth };
   };
 
+  const getSortDisplayName = (sortBy: string) => {
+    switch (sortBy) {
+      case "name":
+        return "Name";
+      case "books":
+        return "Books Published";
+      case "year":
+        return "Year";
+      case "date":
+        return "Date Added";
+      default:
+        return "Name";
+    }
+  };
+
   const stats = getPublisherStats();
 
   if (loading) {
@@ -370,8 +386,12 @@ export default function PublishersPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      <SortAsc className="h-4 w-4 mr-2" />
-                      Sort
+                      {sortOrder === "asc" ? (
+                        <SortAsc className="h-4 w-4 mr-2" />
+                      ) : (
+                        <SortDesc className="h-4 w-4 mr-2" />
+                      )}
+                      Sort: {getSortDisplayName(sortBy)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>

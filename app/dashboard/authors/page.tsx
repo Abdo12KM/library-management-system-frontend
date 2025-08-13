@@ -36,6 +36,7 @@ import {
   Edit,
   Trash2,
   SortAsc,
+  SortDesc,
   MoreHorizontal,
   Mail,
   FileText,
@@ -247,6 +248,19 @@ export default function AuthorsPage() {
     return { totalAuthors, activeAuthors, newThisMonth };
   };
 
+  const getSortDisplayName = (sortBy: string) => {
+    switch (sortBy) {
+      case "name":
+        return "Name";
+      case "email":
+        return "Email";
+      case "date":
+        return "Join Date";
+      default:
+        return "Name";
+    }
+  };
+
   const stats = getAuthorStats();
 
   if (loading) {
@@ -358,8 +372,12 @@ export default function AuthorsPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      <SortAsc className="h-4 w-4 mr-2" />
-                      Sort
+                      {sortOrder === "asc" ? (
+                        <SortAsc className="h-4 w-4 mr-2" />
+                      ) : (
+                        <SortDesc className="h-4 w-4 mr-2" />
+                      )}
+                      Sort: {getSortDisplayName(sortBy)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>

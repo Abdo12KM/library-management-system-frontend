@@ -30,6 +30,7 @@ import {
   Search,
   Users,
   SortAsc,
+  SortDesc,
   MoreHorizontal,
   Mail,
   Phone,
@@ -174,6 +175,21 @@ export default function ReadersPage() {
     return { totalReaders, activeReaders, newThisMonth };
   };
 
+  const getSortDisplayName = (sortBy: string) => {
+    switch (sortBy) {
+      case "name":
+        return "Name";
+      case "email":
+        return "Email";
+      case "phone":
+        return "Phone";
+      case "date":
+        return "Join Date";
+      default:
+        return "Name";
+    }
+  };
+
   const stats = getReaderStats();
 
   if (loading) {
@@ -283,8 +299,12 @@ export default function ReadersPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      <SortAsc className="h-4 w-4 mr-2" />
-                      Sort
+                      {sortOrder === "asc" ? (
+                        <SortAsc className="h-4 w-4 mr-2" />
+                      ) : (
+                        <SortDesc className="h-4 w-4 mr-2" />
+                      )}
+                      Sort: {getSortDisplayName(sortBy)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>

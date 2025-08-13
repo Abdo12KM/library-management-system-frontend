@@ -48,6 +48,7 @@ import {
   Trash2,
   Eye,
   SortAsc,
+  SortDesc,
   Filter,
   Mail,
   Phone,
@@ -125,9 +126,12 @@ export default function StaffManagementPage() {
           bValue = b.role?.toLowerCase() || "";
           break;
         case "date":
+          aValue = new Date(a.staff_join_date || "");
+          bValue = new Date(b.staff_join_date || "");
+          break;
         default:
-          aValue = new Date(a.createdAt || "");
-          bValue = new Date(b.createdAt || "");
+          aValue = `${a.staff_fname} ${a.staff_lname}`.toLowerCase();
+          bValue = `${b.staff_fname} ${b.staff_lname}`.toLowerCase();
           break;
       }
 
@@ -246,6 +250,21 @@ export default function StaffManagementPage() {
     }
   };
 
+  const getSortDisplayName = (sortBy: string) => {
+    switch (sortBy) {
+      case "name":
+        return "Name";
+      case "email":
+        return "Email";
+      case "role":
+        return "Role";
+      case "date":
+        return "Join Date";
+      default:
+        return "Name";
+    }
+  };
+
   const stats = getStaffStats();
 
   if (loading) {
@@ -338,7 +357,11 @@ export default function StaffManagementPage() {
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
                       <Filter className="h-4 w-4 mr-2" />
-                      Role: {roleFilter === "all" ? "All" : roleFilter}
+                      Role:{" "}
+                      {roleFilter === "all"
+                        ? "All"
+                        : roleFilter.charAt(0).toUpperCase() +
+                          roleFilter.slice(1)}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
@@ -360,8 +383,12 @@ export default function StaffManagementPage() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="outline" size="sm">
-                      <SortAsc className="h-4 w-4 mr-2" />
-                      Sort
+                      {sortOrder === "asc" ? (
+                        <SortAsc className="h-4 w-4 mr-2" />
+                      ) : (
+                        <SortDesc className="h-4 w-4 mr-2" />
+                      )}
+                      Sort: {getSortDisplayName(sortBy)} ({sortOrder === "asc" ? "A-Z" : "Z-A"})
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
@@ -378,6 +405,14 @@ export default function StaffManagementPage() {
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => setSortBy("date")}>
                       Join Date
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() =>
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                      }
+                    >
+                      {sortOrder === "asc" ? "Descending" : "Ascending"}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
