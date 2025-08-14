@@ -40,6 +40,7 @@ export default function ProfilePage() {
   const { user, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -53,16 +54,42 @@ export default function ProfilePage() {
     address: "",
   });
 
-  // Sync form data with user data when user changes
+  // Fetch full profile data on component mount
   useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name || "",
-        email: user.email || "",
-        phone: "", // TODO: Get from user data if available
-        address: "", // TODO: Get from user data if available
-      });
-    }
+    const fetchProfileData = async () => {
+      if (!user) return;
+      
+      try {
+        setProfileLoading(true);
+        
+        if (user.role === "reader") {
+          const response = await readersApi.getMe();
+          const readerData = response.data;
+          setFormData({
+            name: `${readerData.reader_fname} ${readerData.reader_lname}`.trim(),
+            email: readerData.reader_email,
+            phone: readerData.reader_phone_no || "",
+            address: readerData.reader_address || "",
+          });
+        } else if (user.role === "admin" || user.role === "librarian") {
+          const response = await staffApi.getMe();
+          const staffData = response.staff;
+          setFormData({
+            name: `${staffData.staff_fname} ${staffData.staff_lname}`.trim(),
+            email: staffData.staff_email,
+            phone: "", // Staff doesn't have phone/address fields
+            address: "",
+          });
+        }
+      } catch (error: any) {
+        console.error("Error fetching profile data:", error);
+        toast.error("Failed to load profile data");
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+
+    fetchProfileData();
   }, [user]);
 
   const handleInputChange = (field: string, value: string) => {
@@ -73,13 +100,7 @@ export default function ProfilePage() {
   };
 
   const handleEditMode = () => {
-    // Ensure form data is current when entering edit mode
-    setFormData({
-      name: user?.name || "",
-      email: user?.email || "",
-      phone: formData.phone, // Keep current phone/address values
-      address: formData.address,
-    });
+    // Ensure form data is current when entering edit mode - data is already fetched in useEffect
     setIsEditing(true);
   };
 
@@ -103,7 +124,7 @@ export default function ProfilePage() {
         }
 
         if (formData.phone) {
-          updateData.reader_contact = formData.phone;
+          updateData.reader_phone_no = formData.phone;
         }
 
         if (formData.address) {
@@ -155,14 +176,30 @@ export default function ProfilePage() {
     }
   };
 
-  const handleCancel = () => {
-    // Reset form data to current user values when canceling
-    setFormData({
-      name: user?.name || "",
-      email: user?.email || "",
-      phone: formData.phone, // Keep current phone/address values
-      address: formData.address,
-    });
+  const handleCancel = async () => {
+    // Reset form data to current values when canceling
+    if (user?.role === "reader") {
+      // For readers, fetch the current data again
+      try {
+        const response = await readersApi.getMe();
+        const readerData = response.data;
+        setFormData({
+          name: `${readerData.reader_fname} ${readerData.reader_lname}`.trim(),
+          email: readerData.reader_email,
+          phone: readerData.reader_phone_no || "",
+          address: readerData.reader_address || "",
+        });
+      } catch (error) {
+        console.error("Error fetching data on cancel:", error);
+      }
+    } else {
+      setFormData({
+        name: user?.name || "",
+        email: user?.email || "",
+        phone: "",
+        address: "",
+      });
+    }
     setIsEditing(false);
   };
 
@@ -265,6 +302,7 @@ export default function ProfilePage() {
           {!isEditing ? (
             <Button
               onClick={handleEditMode}
+              disabled={profileLoading}
               className="flex items-center space-x-2"
             >
               <Edit2 className="h-4 w-4" />
@@ -274,7 +312,7 @@ export default function ProfilePage() {
             <div className="flex space-x-2">
               <Button
                 onClick={handleSave}
-                disabled={loading}
+                disabled={loading || profileLoading}
                 className="flex items-center space-x-2"
               >
                 <Save className="h-4 w-4" />
@@ -283,7 +321,7 @@ export default function ProfilePage() {
               <Button
                 variant="outline"
                 onClick={handleCancel}
-                disabled={loading}
+                disabled={loading || profileLoading}
                 className="flex items-center space-x-2"
               >
                 <X className="h-4 w-4" />
@@ -293,6 +331,14 @@ export default function ProfilePage() {
           )}
         </div>
 
+        {profileLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading profile data...</p>
+            </div>
+          </div>
+        ) : (
         <div className="grid gap-6 md:grid-cols-3">
           {/* Profile Overview */}
           <Card className="md:col-span-1">
@@ -420,6 +466,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         </div>
+        )}
 
         {/* Account Security */}
         <Card>
