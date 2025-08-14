@@ -50,7 +50,7 @@ export default function RegisterPage() {
 
         login(user, response.token);
         toast.success("Registration successful!");
-        router.push("/reader");
+        router.push("/dashboard");
       }
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Registration failed");

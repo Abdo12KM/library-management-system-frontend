@@ -29,7 +29,7 @@ export default function HomePage() {
     return null; // Will redirect
   }
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent to-accent/70">
+    <div className="min-h-screen bg-gradient-to-br from-accent to-accent/70 flex flex-col">
       {/* Header */}
       <header className="bg-card shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -60,7 +60,7 @@ export default function HomePage() {
       </header>
 
       {/* Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 flex-grow">
         <div className="text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
             Modern Library
@@ -134,7 +134,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-card dark:text-white text-black py-8 mt-6">
+      <footer className="bg-card dark:text-white text-black py-8 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
