@@ -29,19 +29,25 @@ export default function MyFinesPage() {
   const fetchMyFines = async () => {
     try {
       setLoading(true);
-      const response = await finesApi.getAll({ readerId: user?.id });
-      // Normalize various possible response shapes into an array of fines
-      const raw = (response as any)?.data;
-      const arr: Fine[] = Array.isArray(raw?.fines)
-        ? raw.fines
-        : Array.isArray(raw)
-          ? raw
-          : Array.isArray((response as any)?.fines)
-            ? (response as any).fines
-            : Array.isArray((response as any)?.data?.fines)
-              ? (response as any).data.fines
-              : [];
-      setFines(arr);
+      // Don't pass readerId - backend automatically filters based on authenticated user
+      const response = await finesApi.getAll();
+      console.log("Fines API response:", response);
+      
+      // Backend returns { status: "success", results: number, data: { fines: Fine[] } }
+      let finesArray: Fine[] = [];
+      
+      if (response?.data?.fines && Array.isArray(response.data.fines)) {
+        finesArray = response.data.fines;
+      } else if ((response as any)?.fines && Array.isArray((response as any).fines)) {
+        finesArray = (response as any).fines;
+      } else if (Array.isArray(response?.data)) {
+        finesArray = response.data as Fine[];
+      } else if (Array.isArray(response)) {
+        finesArray = response as Fine[];
+      }
+      
+      console.log("Parsed fines array:", finesArray);
+      setFines(finesArray);
       setError(null);
     } catch (error) {
       console.error("Error fetching fines:", error);
